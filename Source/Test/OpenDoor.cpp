@@ -19,13 +19,6 @@ void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
-
-	if (ActorThatOpens == nullptr)
-	{
-		UE_LOG(LogTemp, Error, TEXT(" ERROR: is not initialized"));
-	}
-
 	Owner = GetOwner();
 	if (Owner == nullptr) UE_LOG(LogTemp, Error, TEXT(" ERROR: Owner not found !"));
 
@@ -46,11 +39,12 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (PressurePlate->IsOverlappingActor(ActorThatOpens))
+	if (GetTotalMassOfOverlappingActor() > LimitMassWhenDoorOpen) 
 	{
 		OpenDoor();
 		LastTimeOpenDoor = GetWorld()->GetTimeSeconds();
 	}
+
 
 	if (GetWorld()->GetTimeSeconds() - LastTimeOpenDoor >= CloseDoorDelay)
 	{
@@ -74,5 +68,21 @@ void UOpenDoor::CloseDoor()
 	//this_thread::sleep_for(chrono::milliseconds(5000));
 	NewRotation = FRotator(0.f, CloseAngle, 0.f);
 	Owner->SetActorRotation(NewRotation);
+}
+
+float UOpenDoor::GetTotalMassOfOverlappingActor()
+{
+	float TotalMass = 0.f;
+	
+	TArray<AActor*> MyActors;
+
+	PressurePlate->GetOverlappingActors(OUT MyActors);
+
+	for (auto& ActorPtr : MyActors)
+	{
+		TotalMass += ActorPtr->FindComponentByClass<UPrimitiveComponent>()->GetMass();
+	}
+
+	return TotalMass;
 }
 

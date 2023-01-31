@@ -9,6 +9,8 @@
 #include "Grabber.generated.h"
 
 
+#define OUT
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class TEST_API UGrabber : public UActorComponent
@@ -33,7 +35,21 @@ private:
 	UPROPERTY(EditAnywhere)
 		UInputComponent* InputComponent = nullptr;
 
+
+	float reachEndDistance = 100.f;
+
 	void Grab();
+
+	void Release();
+
+	void GetPhysicsHandle();
+
+	void SetUpInputComponent();
+
+	FVector GetReachLineStart() const;
+	FVector GetReachLineEnd() const;
+
+	FHitResult GetFirstPhysicsBodyInReach();
 
 	//FVector GetPlayerWorldPosition();
 
