@@ -7,8 +7,10 @@
 #include "Components/ActorComponent.h"
 #include "OpenDoor.generated.h"
 
-#define OUT
 
+
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDoorEvent);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class TEST_API UOpenDoor : public UActorComponent
@@ -27,13 +29,14 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-
+		
 	void OpenDoor();
+
 	void CloseDoor();
 
 	float GetTotalMassOfOverlappingActor();
 
+	
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -41,13 +44,13 @@ private:
 	/// <summary>
 	/// Represent the angle of the door when it's open
 	/// </summary>
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 		float OpenAngle = 0.f;
 
 	/// <summary>
 	/// Represent the angle of the door when it's close
 	/// </summary>
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 		float CloseAngle = 90.f;
 
 	/// <summary>
@@ -59,6 +62,12 @@ private:
 	float LastTimeOpenDoor;
 
 	float LimitMassWhenDoorOpen = 30.f;
+
+	UPROPERTY(BlueprintAssignable)
+		FDoorEvent OpenDoorRequest;
+
+	UPROPERTY(BlueprintAssignable)
+		FDoorEvent CloseDoorRequest;
 
 
 
